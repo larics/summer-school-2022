@@ -143,6 +143,19 @@ class TrajectoryUtils():
 
     ## | ------------- Functions: trajectory (re)sampling ------------- |
 
+    def lerp(self, start, end, amt):
+        return start+(end-start)*amt
+
+    def clamp(self, num, min_val, max_val):
+        return min(max(num, min_val), max_val)
+
+    def repeat(self, t, m):
+        return self.clamp(t - math.floor(t / m) * m, 0, m)
+
+    def lerpTheta(self, a, b, t):
+        dt = self.repeat(b - a, math.pi * 2.0)
+        return self.lerp(a, a + (dt - math.pi if dt > math.pi / 2.0 else dt), t)
+    
     # # #{ interpolateHeading()
 
     def interpolateHeading(self, waypoints):
@@ -188,7 +201,7 @@ class TrajectoryUtils():
 
             # include start node
             wps_interp.append(subtraj[0])
-
+            
             # interpolate headings
             for i in range(1, len(subtraj) - 1):
 
@@ -201,7 +214,7 @@ class TrajectoryUtils():
                 #  - do not forget to wrap angle to <-pi, pi) (see/use wrapAngle() in utils.py)
 
                 # [STUDENTS TODO] Change variable 'hdg_interp', nothing else
-                hdg_interp = waypoints[0].heading
+                hdg_interp = self.lerp(hdg_from, g_to.heading, float(i / len(subtraj)))
 
                 # replace heading
                 hdg_from   = hdg_interp
