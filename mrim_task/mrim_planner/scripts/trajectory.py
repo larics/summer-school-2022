@@ -143,18 +143,13 @@ class TrajectoryUtils():
 
     ## | ------------- Functions: trajectory (re)sampling ------------- |
 
-    def lerp(self, start, end, amt):
-        return start+(end-start)*amt
+    def lerp_angle(self, frm, to, weight):
+        return frm + self.short_angle_dist(frm, to) * weight
 
-    def clamp(self, num, min_val, max_val):
-        return min(max(num, min_val), max_val)
-
-    def repeat(self, t, m):
-        return self.clamp(t - math.floor(t / m) * m, 0, m)
-
-    def lerpTheta(self, a, b, t):
-        dt = self.repeat(b - a, math.pi * 2.0)
-        return self.lerp(a, a + (dt - math.pi if dt > math.pi / 2.0 else dt), t)
+    def short_angle_dist(self,frm, to):
+        max_angle = math.pi * 2
+        diff = math.fmod(to - frm, max_angle)
+        return math.fmod(2 * diff, max_angle) - diff
     
     # # #{ interpolateHeading()
 
@@ -195,6 +190,7 @@ class TrajectoryUtils():
 
             # get initial heading and subtraj length
             hdg_from    = wrapAngle(g_from.heading)
+            hdg_to      = wrapAngle(g_to.heading)
             subtraj_len = self.getLength(subtraj)
 
             ## | ----------------------- Interpolate ---------------------- |
@@ -214,7 +210,7 @@ class TrajectoryUtils():
                 #  - do not forget to wrap angle to <-pi, pi) (see/use wrapAngle() in utils.py)
 
                 # [STUDENTS TODO] Change variable 'hdg_interp', nothing else
-                hdg_interp = self.lerp(hdg_from, g_to.heading, float(i / len(subtraj)))
+                hdg_interp = self.lerp_angle(hdg_from, hdg_to, float(i / len(subtraj)))
 
                 # replace heading
                 hdg_from   = hdg_interp
