@@ -8,6 +8,7 @@ import itertools, time
 from numpy import sqrt, argmin
 import numpy as np
 from queue import PriorityQueue
+import math
 
 # # #{ class Node
 class Node:
@@ -72,7 +73,7 @@ class Node:
         b = self.pos[1] - self.goal[1]
         c = self.pos[2] - self.goal[2]
 
-        raise NotImplementedError('[STUDENTS TODO] Heuristic function guiding the state space exploration not implemented. You have to finish it on your own.')
+        return math.sqrt(a * a + b * b + c * c)
 # # #}
 
 # # #{ class AStar
